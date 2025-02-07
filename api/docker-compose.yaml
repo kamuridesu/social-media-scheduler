@@ -1,0 +1,9 @@
+services:
+  rabbit:
+    build:
+      context: .
+      dockerfile: rabbitmq/Dockerfile
+    ports:
+      - 5672:5672
+      - 8080:15672
+    
