@@ -1,10 +1,9 @@
 package com.kamuridesu.social_scheduler.config;
 
-import java.util.HashMap;
-
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.CustomExchange;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,16 +23,21 @@ public class RabbitConfig {
                 "x-delayed-message",
                 true,
                 false,
-                new HashMap<String, Object>() {
-                    {
-                        put("x-delayed-type", "direct");
-                    }
-                });
+                RabbitConsts.Args.EXCHANGE_ARGS);
+    }
+
+    @Bean
+    public DirectExchange scheduleDLExchange() {
+        return new DirectExchange(RabbitConsts.Exchanges.DLX);
     }
 
     @Bean
     public Queue scheduleQueue() {
-        return new Queue(RabbitConsts.Queues.SCHEDULE_QUEUE);
+        return new Queue(RabbitConsts.Queues.SCHEDULE_QUEUE,
+                true,
+                false,
+                false,
+                RabbitConsts.Args.QUEUE_ARGS);
     }
 
     @Bean
@@ -46,17 +50,16 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue processQueue() {
-        return new Queue(RabbitConsts.Queues.PROCESS_QUEUE);
+    public Queue scheduleDLQueue() {
+        return new Queue(RabbitConsts.Queues.DQL, true);
     }
 
     @Bean
-    public Binding processBinding(Queue processQueue, CustomExchange schedulerExchange) {
+    public Binding scheduleDLQBinding(Queue scheduleDLQueue, DirectExchange scheduleDLExchange) {
         return BindingBuilder
-                .bind(processQueue)
-                .to(schedulerExchange)
-                .with(RabbitConsts.RoutingKeys.PROCESS_ROUTING_KEY)
-                .noargs();
+                .bind(scheduleDLQueue)
+                .to(scheduleDLExchange)
+                .with(RabbitConsts.RoutingKeys.SCHEDULE_DL_ROUTING_KEY);
     }
 
 }
