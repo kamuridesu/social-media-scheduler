@@ -3,14 +3,16 @@
 // import viteLogo from '/vite.svg'
 import './App.css'
 import { HomePage } from './components/home/home'
+import ProtectedRoute from './components/ProtectedRoute'
+// import LoginPage from './components/LoginPage';
+// import { getCookie } from './utils/cookies';
 
 function App() {
-  // const [count, setCount] = useState(0)
 
   return (
-    <>
+    <ProtectedRoute>
       <HomePage></HomePage>
-    </>
+    </ProtectedRoute>
   )
 }
 
